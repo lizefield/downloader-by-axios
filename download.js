@@ -52,7 +52,7 @@ const AWS_S3_CLIENT = new aws.S3({ region: 'ap-northeast-1' });
 (async () => {
   try {
     console.log(`download start [${TARGET_URL}]`);
-    const ret = await axios.get(TARGET_URL, { timeout : 1000, headers: { 'User-Agent': USER_AGENT } });
+    const ret = await axios.get(TARGET_URL, { timeout : 30000, headers: { 'User-Agent': USER_AGENT } });
     if (ret.status > 400) {
       console.error(`download failed [${TARGET_URL}]: ${ret.status}`);
     } else {
