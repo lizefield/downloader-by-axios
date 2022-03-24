@@ -17,7 +17,7 @@ try {
   }
 } catch (e) {
   console.error(e.message);
-  return;
+  throw e.message;
 }
 
 // load environment values
@@ -37,7 +37,7 @@ if (OUTPUT_TARGET === 'local' && !fs.existsSync(OUTPUT_PATH)) {
     console.log(`Created ${OUTPUT_PATH}`);
   } catch (e) {
     console.error(e.message);
-    return;
+    throw e.message;
   }
 }
 
