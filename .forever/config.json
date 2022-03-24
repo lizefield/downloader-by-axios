@@ -1,8 +1,0 @@
-{
-  "uid": "app",
-  "append": true,
-  "script": "api.js",
-  "sourceDir": "/Users/turquoise/develop/lizefield/downloader-by-axios",
-  "workingDir": "/Users/turquoise/develop/lizefield/downloader-by-axios",
-  "logFile": "/Users/turquoise/develop/lizefield/downloader-by-axios/log/forever.log"
-}

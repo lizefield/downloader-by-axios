@@ -105,3 +105,4 @@ dist
 
 # temporary
 output/
+.forever/
