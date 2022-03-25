@@ -37,3 +37,20 @@ forever start .forever/config.json
 forever list
 forever stop <index>
 ```
+
+## exec (pm2)
+
+```
+npm install pm2 -g
+pm2 start -i 0 api.js --name download-api
+```
+
+```
+pm2 logs
+pm2 flush
+```
+
+```
+pm2 list
+pm2 delete download-api
+```
