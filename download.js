@@ -47,7 +47,8 @@ if (OUTPUT_TARGET === 'local' && !fs.existsSync(OUTPUT_PATH)) {
 const axios = require('axios');
 
 const aws = require('aws-sdk');
-const AWS_S3_CLIENT = new aws.S3({ region: 'ap-northeast-1' });
+const AWS_REGION = process.env.AWS_REGION;
+const AWS_S3_CLIENT = new aws.S3({ region: AWS_REGION });
 
 (async () => {
   try {
