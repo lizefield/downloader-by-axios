@@ -18,21 +18,18 @@ try {
 
 // load environment values
 require("dotenv").config();
-const OUTPUT_TARGET = process.env.OUTPUT_TARGET;
-const OUTPUT_BUCKET = process.env.OUTPUT_BUCKET;
-const OUTPUT_PATH = `${OUTPUT_BUCKET}/${TARGET_HOST}`;
-const USER_AGENT = process.env.USER_AGENT;
+const OUTPUT_BUCKET = process.env.OUTPUT_BUCKET || null;
+const OUTPUT_DIR = process.env.OUTPUT_DIR || null;
+const USER_AGENT = process.env.USER_AGENT || "ArchiveDownloader";
 
-console.log(
-  `Envs: [${OUTPUT_TARGET}] [${OUTPUT_BUCKET}] [${OUTPUT_PATH}] [${USER_AGENT}]`
-);
+console.log(`Envs: [[${OUTPUT_BUCKET}] [${OUTPUT_DIR}] [${USER_AGENT}]`);
 
 // create directory, if it needs
 const fs = require("fs");
-if (OUTPUT_TARGET === "local" && !fs.existsSync(OUTPUT_PATH)) {
+if (OUTPUT_DIR && !fs.existsSync(`${OUTPUT_DIR}/${TARGET_HOST}`)) {
   try {
-    fs.mkdirSync(OUTPUT_PATH, { recursive: true });
-    console.log(`Created ${OUTPUT_PATH}`);
+    fs.mkdirSync(`${OUTPUT_DIR}/${TARGET_HOST}`, { recursive: true });
+    console.log(`Created ${`${OUTPUT_DIR}/${TARGET_HOST}`}`);
   } catch (e) {
     console.error(e.message);
     throw e.message;
@@ -56,21 +53,30 @@ const AWS_S3_CLIENT = new aws.S3({ region: AWS_REGION });
       headers: { "User-Agent": USER_AGENT },
     });
     if (ret.status > 400) {
+      createRobotstxt();
       console.error(`download failed [${TARGET_URL}]: ${ret.status}`);
     } else {
       const data = ret.data.trim();
 
-      if (OUTPUT_TARGET === "local") {
-        fs.writeFile(`${OUTPUT_PATH}/robots.txt`, data, (e) => {
-          if (e) {
-            console.error(e.message);
+      // save to local
+      if (OUTPUT_DIR) {
+        fs.writeFile(
+          `${`${OUTPUT_DIR}/${TARGET_HOST}`}/robots.txt`,
+          data,
+          (e) => {
+            if (e) {
+              console.error(e.message);
+            }
           }
-        });
-      } else {
+        );
+      }
+      // save to s3
+      if (OUTPUT_BUCKET) {
         await uploadTxt(data);
       }
     }
   } catch (e) {
+    createRobotstxt();
     console.error(e.message);
   }
 })();
@@ -82,4 +88,13 @@ async function uploadTxt(data) {
     Key: `${TARGET_HOST}/robots.txt`,
     Body: data,
   }).promise();
+}
+
+function createRobotstxt() {
+  const data = "User-agent: *\nAllow: /";
+  fs.writeFile(`${`${OUTPUT_DIR}/${TARGET_HOST}`}/robots.txt`, data, (e) => {
+    if (e) {
+      console.error(e.message);
+    }
+  });
 }
